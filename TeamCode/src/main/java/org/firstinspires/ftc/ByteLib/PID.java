@@ -12,8 +12,8 @@ public class PID  {
     public double I_SumMaxVal;
     public double I_Sum;
 
-    public double last_e = 0;
-    public double last_time = 0;
+    public double last_e;
+    public double last_time;
 
     public double err;
 
@@ -24,6 +24,8 @@ public class PID  {
         this.Kp = 0;
         this.Ki = 0;
         this.Kd = 0;
+        this.last_time = 0;
+        this.last_e = 0;
     }
 
     //To change values if you don't like them
@@ -39,9 +41,7 @@ public class PID  {
 
     // Return the Proportional
     public double P_err(double e){
-
         return (this.Kp * e);
-
     }
 
     // Return the Integral
