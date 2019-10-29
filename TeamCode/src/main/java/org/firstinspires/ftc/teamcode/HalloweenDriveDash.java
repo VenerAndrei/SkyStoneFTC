@@ -29,18 +29,16 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
-import org.firstinspires.ftc.ByteLib.util.MiniPID;
-import org.firstinspires.ftc.teamcode.MagicNonConstants;
 
-@TeleOp(name="Halloween", group="Test")
-public class HalloweenDrive extends LinearOpMode {
+import org.firstinspires.ftc.ByteLib.util.MiniPID;
+
+@TeleOp(name="DashHalloween", group="Test")
+public class HalloweenDriveDash extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -52,19 +50,16 @@ public class HalloweenDrive extends LinearOpMode {
     private DcMotor leftArm = null;
     private DcMotor rightArm = null;
 
-    MiniPID leftArmPID = new MiniPID(0.001,0,0);
-    MiniPID rightArmPID = new MiniPID(0.001,0,0);
-    String latestButton = "NONE";
+    MiniPID leftArmPID = new MiniPID(MagicNonConstants.leftArm_P,MagicNonConstants.leftArm_I,MagicNonConstants.leftArm_D);
+    MiniPID rightArmPID = new MiniPID(MagicNonConstants.rightArm_P,MagicNonConstants.rightArm_I,MagicNonConstants.rightArm_D);
     int targetLeftArm = 0, targetRightArm = 0;
 
     @Override
     public void runOpMode() {
         telemetry.addData("[ * ]", "Starting init...");
         telemetry.update();
-
-
         telemetry.addData("[ * ]", "DcMotor init ...");
-
+        telemetry.update();
         leftDown   = hardwareMap.get(DcMotor.class, "l1");
         leftUp     = hardwareMap.get(DcMotor.class, "l2");
         rightUp    = hardwareMap.get(DcMotor.class, "r1");
@@ -87,26 +82,24 @@ public class HalloweenDrive extends LinearOpMode {
 
         waitForStart();
         runtime.reset();
+
         while (opModeIsActive()) {
 
             ArcadeControl();
             int nowPosLeftArm = leftArm.getCurrentPosition();
             int nowPosRightArm = rightArm.getCurrentPosition();
 
-            if(gamepad1.y){
-                targetLeftArm = 1200;
-                targetRightArm = 1200;
-            }
-            if(gamepad1.a){
-                targetLeftArm = 0;
-                targetRightArm = 0;
-            }
+            targetLeftArm = MagicNonConstants.LeftArmTARGET;
+            targetRightArm = MagicNonConstants.RightArmTARGET;
 
             double outputLeftArm  = leftArmPID.getOutput(nowPosLeftArm,targetLeftArm);
             double outputRightArm = rightArmPID.getOutput(nowPosRightArm,targetLeftArm);
 
             leftArm.setPower(Range.clip(outputLeftArm, -1.0, 1.0));
             rightArm.setPower(Range.clip(outputRightArm, -1.0, 1.0));
+
+            leftArmPID.setPID(MagicNonConstants.leftArm_P,MagicNonConstants.leftArm_I,MagicNonConstants.leftArm_D);
+            rightArmPID.setPID(MagicNonConstants.rightArm_P,MagicNonConstants.rightArm_I,MagicNonConstants.rightArm_D);
 
             telemetry.addData("Target   : ", targetLeftArm);
             telemetry.addData("Error    : ", outputLeftArm);
